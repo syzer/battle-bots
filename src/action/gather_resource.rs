@@ -19,7 +19,7 @@ impl ExecutableAction for GatherResource {
             if let GameCell::Resource(resource) =
                 game_state.map[gathering_position_x][gathering_position_y]
             {
-                bot.health += resource.health_gain;
+                bot.energy += resource.energy_gain;
                 game_state.map[gathering_position_x][gathering_position_y] = GameCell::Empty;
             }
         }

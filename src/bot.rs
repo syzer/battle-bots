@@ -1,21 +1,25 @@
 use ruscii::terminal::Color;
 
-use crate::{
-    action::{move_bot::MoveBot, Action},
-    state::GameState,
-    utils::direction::Direction,
-};
+use crate::state::BOTS_STARTING_ENERGY;
+
+use self::{strategy::BotStrategy, dummy::DummyStrategy};
+
+pub mod dummy;
+pub mod strategy;
 
 #[derive(Clone, Copy)]
 pub struct Bot {
-    pub health: usize,
-    pub color: Color
+    pub energy: usize,
+    pub color: Color,
+    pub strategy: BotStrategy,
 }
 
 impl Bot {
-    pub fn decide(&self, game_state: &GameState) -> Action {
-        Action::MoveBot(MoveBot {
-            move_direction: Direction::Up,
-        })
+    pub fn new_dummy(color: Color) -> Bot {
+        Bot {
+            color,
+            energy: BOTS_STARTING_ENERGY,
+            strategy: BotStrategy::Dummy(DummyStrategy),
+        }
     }
 }

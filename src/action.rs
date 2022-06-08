@@ -1,6 +1,8 @@
 use crate::state::GameState;
 
-use self::{attack::Attack, gather_resource::GatherResource, move_bot::MoveBot};
+use self::{
+    attack::Attack, gather_resource::GatherResource, move_bot::MoveBot, split_bot::SplitBot,
+};
 
 pub mod attack;
 pub mod gather_resource;
@@ -15,6 +17,7 @@ pub enum Action {
     Attack(Attack),
     GatherResource(GatherResource),
     MoveBot(MoveBot),
+    SplitBot(SplitBot),
 }
 
 impl ExecutableAction for Action {
@@ -25,6 +28,7 @@ impl ExecutableAction for Action {
                 gather_resource.execute(bot_pos_x, bot_pos_y, game_state)
             }
             Action::MoveBot(move_bot) => move_bot.execute(bot_pos_x, bot_pos_y, game_state),
+            Action::SplitBot(split_bot) => split_bot.execute(bot_pos_x, bot_pos_y, game_state),
         }
     }
 }

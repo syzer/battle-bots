@@ -1,5 +1,5 @@
 use crate::{
-    state::{GameCell, GameState, MOVE_HEALTH_LOSS},
+    state::{GameCell, GameState, MOVE_ENERGY_LOSS},
     utils::direction::Direction,
 };
 
@@ -16,7 +16,7 @@ impl ExecutableAction for MoveBot {
 
         if let GameCell::Bot(mut bot) = game_state.map[bot_pos_x][bot_pos_y] {
             if let GameCell::Empty = game_state.map[final_position_x][final_position_y] {
-                bot.health -= MOVE_HEALTH_LOSS;
+                bot.energy -= MOVE_ENERGY_LOSS;
 
                 game_state.map[final_position_x][final_position_y] = GameCell::Bot(bot);
                 game_state.map[bot_pos_x][bot_pos_y] = GameCell::Empty;

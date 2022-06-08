@@ -1,10 +1,12 @@
+use bot::dummy::DummyStrategy;
+use bot::Bot;
 use ruscii::app::{App, Config, State};
 use ruscii::drawing::{Pencil, RectCharset};
 use ruscii::gui::FPSCounter;
 use ruscii::keyboard::{Key, KeyEvent};
 use ruscii::spatial::Vec2;
 use ruscii::terminal::{Color, Window};
-use state::{GameCell, GameState, MAP_HEIGHT, MAP_WIDTH};
+use state::{GameCell, GameState, BOTS_STARTING_ENERGY, MAP_HEIGHT, MAP_WIDTH};
 
 mod action;
 mod bot;
@@ -17,7 +19,11 @@ fn main() {
     let size = app.window().size();
 
     let mut fps_counter = FPSCounter::new();
-    let mut state = GameState::new(vec![Color::Yellow, Color::Red, Color::Blue]);
+    let mut state = GameState::new(vec![
+        Bot::new_dummy(Color::Yellow),
+        Bot::new_dummy(Color::Blue),
+        Bot::new_dummy(Color::Red),
+    ]);
 
     app.run(|app_state: &mut State, window: &mut Window| {
         for key_event in app_state.keyboard().last_key_events() {
@@ -52,13 +58,13 @@ fn main() {
                 if let GameCell::Bot(bot) = &state.map[x][y] {
                     pencil.set_foreground(bot.color);
                     pencil.draw_center_text(
-                        format!("{}", bot.health).as_str(),
+                        format!("{}", bot.energy).as_str(),
                         Vec2::xy(x, MAP_HEIGHT - 1 - y),
                     );
                 } else if let GameCell::Resource(resource) = &state.map[x][y] {
                     pencil.set_foreground(Color::White);
                     pencil.draw_center_text(
-                        format!("{}", resource.health_gain).as_str(),
+                        format!("{}", resource.energy_gain).as_str(),
                         Vec2::xy(x, MAP_HEIGHT - 1 - y),
                     );
                 }
