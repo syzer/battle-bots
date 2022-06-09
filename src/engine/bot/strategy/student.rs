@@ -9,7 +9,7 @@ use super::super::strategy::DecidingStrategy;
 pub struct StudentStrategy;
 
 impl DecidingStrategy for StudentStrategy {
-    fn decide(&self, bot_pos_x: usize, bot_pos_y: usize, game_state: &GameState) -> Action {
+    fn decide(&self, bot_pos_x: usize, bot_pos_y: usize, game_state: &GameState) -> Result<Action, String> {
         crate::decide(bot_pos_x, bot_pos_y, game_state)
     }
 }

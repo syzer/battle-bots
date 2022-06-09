@@ -55,9 +55,9 @@ impl GameState {
         for x in 0..MAP_WIDTH {
             for y in 0..MAP_HEIGHT {
                 if let GameCell::Bot(bot) = old_map[x][y] {
-                    let action = bot.strategy.decide(x, y, self);
-
-                    action.execute(x, y, self);
+                    if let Ok(action) = bot.strategy.decide(x, y, self) {
+                        action.execute(x, y, self);
+                    }
                 }
             }
         }

@@ -6,8 +6,8 @@ use super::super::{
 use super::ExecutableAction;
 
 pub struct Attack {
-    attacking_direction: Direction,
-    force: usize,
+    pub attacking_direction: Direction,
+    pub force: usize,
 }
 
 impl ExecutableAction for Attack {

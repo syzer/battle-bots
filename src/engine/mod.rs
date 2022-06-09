@@ -7,6 +7,8 @@ use ruscii::spatial::Vec2;
 use ruscii::terminal::{Color, Window};
 use state::{GameCell, GameState, BOTS_STARTING_ENERGY, MAP_HEIGHT, MAP_WIDTH};
 
+pub use bot::strategy::dummy;
+
 pub mod action;
 pub mod bot;
 pub mod resource;

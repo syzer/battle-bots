@@ -6,7 +6,7 @@ use super::super::{
 use super::ExecutableAction;
 
 pub struct GatherResource {
-    gathering_direction: Direction,
+    pub gathering_direction: Direction,
 }
 
 impl ExecutableAction for GatherResource {
