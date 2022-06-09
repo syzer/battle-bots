@@ -6,13 +6,13 @@ use super::{
     resource::Resource,
 };
 
-pub const RESOURCE_RATE: f32 = 0.0002;
-pub const RESOURCE_MAX_ENERGY_GAIN: usize = 7;
-pub const RESOURCE_MIN_ENERGY_GAIN: usize = 1;
-pub const MAP_HEIGHT: usize = 40;
-pub const MAP_WIDTH: usize = 80;
+pub const RESOURCE_RATE: f32 = 0.002;
+pub const RESOURCE_MAX_ENERGY_GAIN: usize = 4;
+pub const RESOURCE_MIN_ENERGY_GAIN: usize = 2;
+pub const MAP_HEIGHT: usize = 10;
+pub const MAP_WIDTH: usize = 20;
 pub const BOTS_STARTING_ENERGY: usize = 9;
-pub const MOVE_ENERGY_LOSS: usize = 0;
+pub const AMOUNT_OF_MOVES_THAT_MAKES_A_BOT_LOSE_1_ENERGY: usize = 5;
 pub const SPLIT_ENERGY_LOSS: usize = 0;
 
 #[derive(Clone, Copy)]
@@ -63,7 +63,13 @@ impl GameState {
         }
         for x in 0..MAP_WIDTH {
             for y in 0..MAP_HEIGHT {
-                if let GameCell::Bot(bot) = self.map[x][y] {
+                if let GameCell::Bot(mut bot) = self.map[x][y] {
+                    if bot.tiredness == AMOUNT_OF_MOVES_THAT_MAKES_A_BOT_LOSE_1_ENERGY {
+                        bot.tiredness = 0;
+                        bot.energy -= 1;
+
+                        self.map[x][y] = GameCell::Bot(bot);
+                    }
                     if bot.energy <= 0 {
                         self.map[x][y] = GameCell::Empty;
                     }

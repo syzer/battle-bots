@@ -1,28 +1,29 @@
-use rand::Rng;
-
 use crate::engine::{
     action::{attack::Attack, gather_resource::GatherResource, move_bot::MoveBot},
     state::GameCell,
     utils::direction::Direction,
 };
 
-use super::super::super::{action::Action, state::GameState};
+use super::{super::super::{
+    action::{split_bot::SplitBot, Action},
+    state::GameState,
+}, dummy::random_move};
 
-use super::DecidingStrategy;
+use super::super::strategy::DecidingStrategy;
 
 #[derive(Clone, Copy)]
-pub struct DummyStrategy;
+pub struct BlueStrategy;
 
-impl DecidingStrategy for DummyStrategy {
+impl DecidingStrategy for BlueStrategy {
     fn decide(
         &self,
         bot_pos_x: usize,
         bot_pos_y: usize,
         game_state: &GameState,
     ) -> Result<Action, String> {
-        if let Some((x, y)) = should_attack(bot_pos_x, bot_pos_y, game_state) {
-            let direction =
-                adjacent_positions_to_direction(bot_pos_x, bot_pos_y, x, y).expect("Bad position");
+        if let Some((x, y)) = crate::should_attack(bot_pos_x, bot_pos_y, game_state) {
+            let direction = crate::adjacent_positions_to_direction(bot_pos_x, bot_pos_y, x, y)
+                .expect("Bad position");
 
             let force = get_attacking_force(bot_pos_x, bot_pos_y, &direction, game_state);
 
@@ -34,7 +35,9 @@ impl DecidingStrategy for DummyStrategy {
 
         if let Some((x, y)) = should_gather_resource(bot_pos_x, bot_pos_y, game_state) {
             return Ok(Action::GatherResource(GatherResource {
-                gathering_direction: adjacent_positions_to_direction(bot_pos_x, bot_pos_y, x, y)?,
+                gathering_direction: crate::adjacent_positions_to_direction(
+                    bot_pos_x, bot_pos_y, x, y,
+                )?,
             }));
         }
 
@@ -44,28 +47,26 @@ impl DecidingStrategy for DummyStrategy {
             }));
         }
 
-        Err("Nothing to do".into())
+        return Ok(Action::MoveBot(MoveBot {
+            move_direction: random_move(),
+        }));
     }
 }
 
-pub(super) fn random_move() -> Direction {
-    Direction::Down
-}
-
-pub(super) fn is_bot(game_cell: GameCell) -> bool {
+fn is_bot(game_cell: GameCell) -> bool {
     match game_cell {
         GameCell::Bot(_) => true,
         _ => false,
     }
 }
-pub(super) fn is_resource(game_cell: GameCell) -> bool {
+fn is_resource(game_cell: GameCell) -> bool {
     match game_cell {
         GameCell::Resource(_) => true,
         _ => false,
     }
 }
 
-pub(super) fn absolute(n: isize) -> usize {
+fn absolute(n: isize) -> usize {
     if n < 0 {
         return -n as usize;
     } else {
@@ -73,31 +74,12 @@ pub(super) fn absolute(n: isize) -> usize {
     }
 }
 
-pub(super) fn adjacent_positions_to_direction(
-    from_x: usize,
-    from_y: usize,
-    to_x: usize,
-    to_y: usize,
-) -> Result<Direction, String> {
-    if from_x + 1 == to_x && from_y == to_y {
-        return Ok(Direction::Right);
-    } else if from_x == to_x + 1 && from_y == to_y {
-        return Ok(Direction::Left);
-    } else if from_x == to_x && from_y + 1 == to_y {
-        return Ok(Direction::Up);
-    } else if from_x == to_x && from_y == to_y + 1 {
-        return Ok(Direction::Down);
-    }
-
-    Err(String::from("Positions are not adjacent"))
-}
-
-pub(super) fn should_move_towards_resource(
+fn should_move_towards_resource(
     bot_pos_x: usize,
     bot_pos_y: usize,
     game_state: &GameState,
 ) -> Option<Direction> {
-    if let Some((x, y)) = get_closest_resource(bot_pos_x, bot_pos_y, game_state) {
+    if let Some((x, y)) = crate::get_closest_resource(bot_pos_x, bot_pos_y, game_state) {
         if distance(bot_pos_x, bot_pos_y, x, y) < 100 {
             if let Ok(next_move) = next_move_in_path(bot_pos_x, bot_pos_y, x, y, game_state) {
                 return Some(next_move);
@@ -108,7 +90,7 @@ pub(super) fn should_move_towards_resource(
     None
 }
 
-pub(super) fn next_move_in_path(
+fn next_move_in_path(
     from_pos_x: usize,
     from_pos_y: usize,
     to_pos_x: usize,
@@ -119,10 +101,10 @@ pub(super) fn next_move_in_path(
 
     let (to_pos_x, to_pos_y) = moves[0];
 
-    adjacent_positions_to_direction(from_pos_x, from_pos_y, to_pos_x, to_pos_y)
+    crate::adjacent_positions_to_direction(from_pos_x, from_pos_y, to_pos_x, to_pos_y)
 }
 
-pub(super) fn find_shortest_path(
+fn find_shortest_path(
     from_pos_x: usize,
     from_pos_y: usize,
     to_pos_x: usize,
@@ -167,7 +149,7 @@ pub(super) fn find_shortest_path(
     Err("There is no available path".into())
 }
 
-pub(super) fn get_attacking_force(
+fn get_attacking_force(
     bot_pos_x: usize,
     bot_pos_y: usize,
     attacking_direction: &Direction,
@@ -176,46 +158,14 @@ pub(super) fn get_attacking_force(
     2
 }
 
-pub(super) fn distance(
-    from_pos_x: usize,
-    from_pos_y: usize,
-    to_pos_x: usize,
-    to_pos_y: usize,
-) -> usize {
+fn distance(from_pos_x: usize, from_pos_y: usize, to_pos_x: usize, to_pos_y: usize) -> usize {
     let x_distance = absolute(to_pos_x as isize - from_pos_x as isize);
     let y_distance = absolute(to_pos_y as isize - from_pos_y as isize);
 
     x_distance + y_distance
 }
 
-pub(super) fn get_closest_resource(
-    bot_pos_x: usize,
-    bot_pos_y: usize,
-    game_state: &GameState,
-) -> Option<(usize, usize)> {
-    let mut closest_enemy: Option<(usize, usize)> = None;
-
-    for x in 0..game_state.map.len() {
-        for y in 0..game_state.map[0].len() {
-            if is_resource(game_state.map[x][y]) {
-                match closest_enemy {
-                    Some((closest_x, closest_y))
-                        if distance(closest_x, closest_y, bot_pos_x, bot_pos_y)
-                            < distance(x, y, bot_pos_x, bot_pos_y) => {}
-                    _ => closest_enemy = Some((x, y)),
-                };
-            }
-        }
-    }
-
-    closest_enemy
-}
-
-pub(super) fn get_adjacent_positions(
-    x: usize,
-    y: usize,
-    game_state: &GameState,
-) -> Vec<(usize, usize)> {
+fn get_adjacent_positions(x: usize, y: usize, game_state: &GameState) -> Vec<(usize, usize)> {
     let mut positions = vec![];
 
     if x > 0 {
@@ -234,23 +184,7 @@ pub(super) fn get_adjacent_positions(
     positions
 }
 
-pub(super) fn should_attack(
-    bot_pos_x: usize,
-    bot_pos_y: usize,
-    game_state: &GameState,
-) -> Option<(usize, usize)> {
-    let positions = get_adjacent_positions(bot_pos_x, bot_pos_y, game_state);
-
-    for (x, y) in positions {
-        if is_bot(game_state.map[x][y]) {
-            return Some((x, y));
-        }
-    }
-
-    None
-}
-
-pub(super) fn should_gather_resource(
+fn should_gather_resource(
     bot_pos_x: usize,
     bot_pos_y: usize,
     game_state: &GameState,

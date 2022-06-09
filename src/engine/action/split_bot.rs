@@ -1,6 +1,6 @@
 use super::super::{
     bot::Bot,
-    state::{GameCell, GameState, MOVE_ENERGY_LOSS, SPLIT_ENERGY_LOSS},
+    state::{GameCell, GameState, SPLIT_ENERGY_LOSS},
     utils::direction::Direction,
 };
 
@@ -26,6 +26,7 @@ impl ExecutableAction for SplitBot {
                 strategy: bot.strategy.clone(),
                 color: bot.color,
                 energy: bot.energy,
+                tiredness: 0
             };
 
             if let GameCell::Empty = game_state.map[up_bot_x][up_bot_y] {

@@ -6,9 +6,9 @@ use super::super::super::{
 use super::super::strategy::DecidingStrategy;
 
 #[derive(Clone, Copy)]
-pub struct StudentStrategy;
+pub struct RedStrategy;
 
-impl DecidingStrategy for StudentStrategy {
+impl DecidingStrategy for RedStrategy {
     fn decide(&self, bot_pos_x: usize, bot_pos_y: usize, game_state: &GameState) -> Result<Action, String> {
         crate::decide(bot_pos_x, bot_pos_y, game_state)
     }

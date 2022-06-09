@@ -20,10 +20,10 @@ pub fn run_app() {
 
     let mut fps_counter = FPSCounter::new();
     let mut state = GameState::new(vec![
-        Bot::new_student(Color::Green),
-        Bot::new_dummy(Color::Yellow),
-        Bot::new_dummy(Color::Blue),
-        Bot::new_dummy(Color::Red),
+        Bot::new(Color::Green),
+        Bot::new(Color::Yellow),
+        Bot::new(Color::Blue),
+        Bot::new(Color::Red),
     ]);
 
     app.run(|app_state: &mut State, window: &mut Window| {

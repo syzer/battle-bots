@@ -17,15 +17,18 @@ impl ExecutableAction for Attack {
             .compute_position(bot_pos_x, bot_pos_y);
 
         if let GameCell::Bot(mut bot) = game_state.map[bot_pos_x][bot_pos_y] {
-            bot.energy -= self.force / 10;
+            // bot.energy -= self.force / 10;
             if let GameCell::Bot(mut attacked_bot) =
                 game_state.map[attacked_position_x][attacked_position_y]
             {
-                let original_energy = attacked_bot.energy;
-                attacked_bot.energy -= self.force;
-                if attacked_bot.energy <= 0 {
-                    bot.energy += original_energy;
+                if attacked_bot.energy <= self.force {
+                    attacked_bot.energy = 0;
+                } else {
+                    attacked_bot.energy -= self.force;
                 }
+
+                game_state.map[attacked_position_x][attacked_position_y] =
+                    GameCell::Bot(attacked_bot);
             }
         }
     }

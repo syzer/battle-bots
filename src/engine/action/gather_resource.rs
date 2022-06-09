@@ -1,3 +1,5 @@
+use crate::engine::state::BOTS_STARTING_ENERGY;
+
 use super::super::{
     state::{GameCell, GameState},
     utils::direction::Direction,
@@ -20,6 +22,12 @@ impl ExecutableAction for GatherResource {
                 game_state.map[gathering_position_x][gathering_position_y]
             {
                 bot.energy += resource.energy_gain;
+
+                if bot.energy >= BOTS_STARTING_ENERGY {
+                    bot.energy = BOTS_STARTING_ENERGY;
+                }
+
+                game_state.map[bot_pos_x][bot_pos_y] = GameCell::Bot(bot);
                 game_state.map[gathering_position_x][gathering_position_y] = GameCell::Empty;
             }
         }
