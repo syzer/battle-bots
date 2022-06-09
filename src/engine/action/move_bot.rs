@@ -1,4 +1,4 @@
-use crate::{
+use super::super::{
     state::{GameCell, GameState, MOVE_ENERGY_LOSS},
     utils::direction::Direction,
 };

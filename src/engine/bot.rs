@@ -1,10 +1,9 @@
 use ruscii::terminal::Color;
 
-use crate::state::BOTS_STARTING_ENERGY;
+use super::state::BOTS_STARTING_ENERGY;
 
-use self::{strategy::BotStrategy, dummy::DummyStrategy};
+use self::strategy::{dummy::DummyStrategy, BotStrategy, student::StudentStrategy};
 
-pub mod dummy;
 pub mod strategy;
 
 #[derive(Clone, Copy)]
@@ -20,6 +19,13 @@ impl Bot {
             color,
             energy: BOTS_STARTING_ENERGY,
             strategy: BotStrategy::Dummy(DummyStrategy),
+        }
+    }
+    pub fn new_student(color: Color) -> Bot {
+        Bot {
+            color,
+            energy: BOTS_STARTING_ENERGY,
+            strategy: BotStrategy::Student(StudentStrategy),
         }
     }
 }

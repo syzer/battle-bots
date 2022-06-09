@@ -1,4 +1,4 @@
-use crate::state::{MAP_HEIGHT, MAP_WIDTH};
+use super::super::state::{MAP_HEIGHT, MAP_WIDTH};
 
 pub enum Direction {
     Up,

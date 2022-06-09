@@ -1,4 +1,4 @@
-use crate::state::GameState;
+use super::state::GameState;
 
 use self::{
     attack::Attack, gather_resource::GatherResource, move_bot::MoveBot, split_bot::SplitBot,

@@ -1,4 +1,4 @@
-use crate::{
+use super::super::{
     state::{GameCell, GameState},
     utils::direction::Direction,
 };

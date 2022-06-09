@@ -1,15 +1,19 @@
 use rand::Rng;
 
-use crate::{action::ExecutableAction, bot::{Bot, strategy::DecidingStrategy}, resource::Resource};
+use super::{
+    action::ExecutableAction,
+    bot::{strategy::DecidingStrategy, Bot},
+    resource::Resource,
+};
 
 pub const RESOURCE_RATE: f32 = 0.0002;
-pub const RESOURCE_MAX_ENERGY_GAIN: usize = 70;
-pub const RESOURCE_MIN_ENERGY_GAIN: usize = 10;
+pub const RESOURCE_MAX_ENERGY_GAIN: usize = 7;
+pub const RESOURCE_MIN_ENERGY_GAIN: usize = 1;
 pub const MAP_HEIGHT: usize = 40;
 pub const MAP_WIDTH: usize = 80;
-pub const BOTS_STARTING_ENERGY: usize = 100;
-pub const MOVE_ENERGY_LOSS: usize = 1;
-pub const SPLIT_ENERGY_LOSS: usize = 1;
+pub const BOTS_STARTING_ENERGY: usize = 9;
+pub const MOVE_ENERGY_LOSS: usize = 0;
+pub const SPLIT_ENERGY_LOSS: usize = 0;
 
 #[derive(Clone, Copy)]
 pub enum GameCell {
@@ -51,7 +55,7 @@ impl GameState {
         for x in 0..MAP_WIDTH {
             for y in 0..MAP_HEIGHT {
                 if let GameCell::Bot(bot) = old_map[x][y] {
-                    let action = bot.strategy.decide(self);
+                    let action = bot.strategy.decide(x, y, self);
 
                     action.execute(x, y, self);
                 }
