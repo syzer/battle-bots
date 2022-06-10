@@ -1,5 +1,6 @@
 use super::super::state::{MAP_HEIGHT, MAP_WIDTH};
 
+#[derive(Clone, Copy, PartialEq, Eq)]
 pub enum Direction {
     Up,
     Down,

@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use bot::Bot;
 use ruscii::app::{App, Config, State};
 use ruscii::drawing::{Pencil, RectCharset};
@@ -7,7 +9,8 @@ use ruscii::spatial::Vec2;
 use ruscii::terminal::{Color, Window};
 use state::{GameCell, GameState, BOTS_STARTING_ENERGY, MAP_HEIGHT, MAP_WIDTH};
 
-pub use bot::strategy::dummy;
+use self::bot::ColorConfig;
+use self::utils::direction::Direction;
 
 pub mod action;
 pub mod bot;
@@ -15,16 +18,11 @@ pub mod resource;
 pub mod state;
 pub mod utils;
 
-pub fn run_app() {
+pub fn run_app(bots: Vec<ColorConfig>) {
     let mut app = App::config(Config::new().fps(2));
 
     let mut fps_counter = FPSCounter::new();
-    let mut state = GameState::new(vec![
-        Bot::new(Color::Green),
-        Bot::new(Color::Yellow),
-        Bot::new(Color::Blue),
-        Bot::new(Color::Red),
-    ]);
+    let mut state = GameState::new(bots);
 
     app.run(|app_state: &mut State, window: &mut Window| {
         for key_event in app_state.keyboard().last_key_events() {
@@ -58,10 +56,20 @@ pub fn run_app() {
             for y in 0..MAP_HEIGHT {
                 if let GameCell::Bot(bot) = &state.map[x][y] {
                     pencil.set_foreground(bot.color);
-                    pencil.draw_center_text(
-                        format!("{}", bot.energy).as_str(),
+                    pencil.draw_char(
+                        format!("{}", bot.energy).as_str().chars().next().unwrap(),
                         Vec2::xy(x, MAP_HEIGHT - 1 - y),
                     );
+                    match bot.shield_direction {
+                        Direction::Down => pencil.draw_char('ˉ', Vec2::xy(x, MAP_HEIGHT - 2 - y)),
+                        Direction::Up => pencil.draw_char('_', Vec2::xy(x, MAP_HEIGHT - y)),
+                        Direction::Left => {
+                            pencil.draw_char('|', Vec2::xy(x - 1, MAP_HEIGHT - 1 - y))
+                        }
+                        Direction::Right => {
+                            pencil.draw_char('|', Vec2::xy(x + 1, MAP_HEIGHT - 1 - y))
+                        }
+                    };
                 } else if let GameCell::Resource(resource) = &state.map[x][y] {
                     pencil.set_foreground(Color::White);
                     pencil.draw_center_text(
