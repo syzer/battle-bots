@@ -1,7 +1,7 @@
-use crate::engine::state::BOTS_STARTING_ENERGY;
+use crate::engine::state::{from_matrix, state_to_matrix, GameState, BOTS_STARTING_ENERGY};
 
 use super::super::{
-    state::{GameCell, GameState},
+    state::{Battle, GameCell},
     utils::direction::Direction,
 };
 
@@ -12,24 +12,26 @@ pub struct GatherResource {
 }
 
 impl ExecutableAction for GatherResource {
-    fn execute(&self, bot_pos_x: usize, bot_pos_y: usize, game_state: &mut GameState) -> () {
+    fn execute(&self, bot_pos_x: usize, bot_pos_y: usize, state: GameState) -> GameState {
         let (gathering_position_x, gathering_position_y) = self
             .gathering_direction
             .compute_position(bot_pos_x, bot_pos_y);
 
-        if let GameCell::Bot(mut bot) = game_state.map[bot_pos_x][bot_pos_y] {
-            if let GameCell::Resource(resource) =
-                game_state.map[gathering_position_x][gathering_position_y]
-            {
+        let mut map = state_to_matrix(state);
+
+        if let GameCell::Bot(mut bot) = map[bot_pos_x][bot_pos_y] {
+            if let GameCell::Resource(resource) = map[gathering_position_x][gathering_position_y] {
                 bot.energy += resource.energy_gain;
 
                 if bot.energy >= BOTS_STARTING_ENERGY {
                     bot.energy = BOTS_STARTING_ENERGY;
                 }
 
-                game_state.map[bot_pos_x][bot_pos_y] = GameCell::Bot(bot);
-                game_state.map[gathering_position_x][gathering_position_y] = GameCell::Empty;
+                map[bot_pos_x][bot_pos_y] = GameCell::Bot(bot);
+                map[gathering_position_x][gathering_position_y] = GameCell::Empty;
             }
         }
+
+        from_matrix(map)
     }
 }

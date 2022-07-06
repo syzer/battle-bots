@@ -1,5 +1,7 @@
+use crate::engine::state::{from_matrix, state_to_matrix, GameState};
+
 use super::super::{
-    state::{GameCell, GameState},
+    state::{Battle, GameCell},
     utils::direction::Direction,
 };
 
@@ -10,16 +12,17 @@ pub struct MoveBot {
 }
 
 impl ExecutableAction for MoveBot {
-    fn execute(&self, bot_pos_x: usize, bot_pos_y: usize, game_state: &mut GameState) -> () {
+    fn execute(&self, bot_pos_x: usize, bot_pos_y: usize, state: GameState) -> GameState {
         let (final_position_x, final_position_y) =
             self.move_direction.compute_position(bot_pos_x, bot_pos_y);
+        let mut map = state_to_matrix(state);
 
-        if let GameCell::Bot(bot) = game_state.map[bot_pos_x][bot_pos_y] {
-            if let GameCell::Empty = game_state.map[final_position_x][final_position_y] {
-
-                game_state.map[final_position_x][final_position_y] = GameCell::Bot(bot);
-                game_state.map[bot_pos_x][bot_pos_y] = GameCell::Empty;
+        if let GameCell::Bot(bot) = map[bot_pos_x][bot_pos_y] {
+            if let GameCell::Empty = map[final_position_x][final_position_y] {
+                map[final_position_x][final_position_y] = GameCell::Bot(bot);
+                map[bot_pos_x][bot_pos_y] = GameCell::Empty;
             }
         }
+        from_matrix(map)
     }
 }

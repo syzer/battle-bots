@@ -2,7 +2,8 @@ use ruscii::terminal::Color;
 
 use super::{
     action::Action,
-    state::{GameState, BOTS_STARTING_ENERGY}, utils::direction::Direction,
+    state::{GameState, BOTS_STARTING_ENERGY},
+    utils::direction::Direction,
 };
 
 pub type BotStrategy = fn(usize, usize, &GameState) -> Result<Action, String>;
@@ -17,7 +18,8 @@ pub struct ColorConfig {
 pub struct Bot {
     pub energy: usize,
     pub color: Color,
-    pub shield_direction: Direction
+    pub chainsaw_direction: Direction,
+    pub shield_direction: Direction,
 }
 
 impl Bot {
@@ -25,7 +27,8 @@ impl Bot {
         Bot {
             energy: BOTS_STARTING_ENERGY,
             color,
-            shield_direction: Direction::Left
+            shield_direction: Direction::Up,
+            chainsaw_direction: Direction::Up,
         }
     }
 }
