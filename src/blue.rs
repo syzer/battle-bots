@@ -1,9 +1,4 @@
-use crate::engine::{
-    actuators::Actuators,
-    bot::Bot,
-    state::{GameState, Position},
-    utils::direction::{Direction, Rotation},
-};
+use battle_bots_engine::*;
 
 /**
  * Rotate the shield towards and adjacent enemy

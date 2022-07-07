@@ -9,8 +9,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d468802bab17cbc0cc575e9b053f41e72aa36bfa6b7f55e3529ffa43161b97fa"
 
 [[package]]
-name = "battlebots"
+name = "battle_bots"
 version = "0.1.0"
+dependencies = [
+ "battle_bots_engine",
+]
+
+[[package]]
+name = "battle_bots_engine"
+version = "0.1.0"
+source = "git+https://github.com/holochain-immersive/battle-bots-engine?branch=main#dedf28b102532c735985a0ef77fbf2e190f5bcfd"
 dependencies = [
  "rand",
  "ruscii",

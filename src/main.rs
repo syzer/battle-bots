@@ -1,11 +1,9 @@
-use engine::bot::ColorConfig;
-use ruscii::terminal::Color;
+use battle_bots_engine::*;
 
 mod blue;
-mod engine;
 
 fn main() {
-    engine::run_battle(vec![
+    Battle::new(vec![
         ColorConfig {
             color: Color::Blue,
             number_of_bots: 3,
@@ -26,5 +24,6 @@ fn main() {
             number_of_bots: 3,
             strategy: blue::decide,
         },
-    ]);
+    ])
+    .run()
 }
