@@ -10,17 +10,17 @@ use ruscii::terminal::{Color, Window};
 use state::{Battle, GameCell, MAP_HEIGHT, MAP_WIDTH};
 
 use self::bot::ColorConfig;
-use self::state::state_to_matrix;
+use self::state::{state_to_matrix, STARTING_SHIELD_RESISTANCE};
 use self::utils::direction::Direction;
 
-pub mod action;
+pub mod actuators;
 pub mod bot;
 pub mod resource;
 pub mod state;
 pub mod utils;
 
 pub fn run_battle(bots: Vec<ColorConfig>) {
-    let mut app = App::config(Config::new().fps(2));
+    let mut app = App::config(Config::new().fps(1));
 
     let mut fps_counter = FPSCounter::new();
     let mut battle = Battle::new(bots);
@@ -40,12 +40,7 @@ pub fn run_battle(bots: Vec<ColorConfig>) {
         let mut pencil = Pencil::new(window.canvas_mut());
 
         pencil
-            .draw_text(
-                &format!("FPS: {}", fps_counter.count()),
-                Vec2::xy(0 as usize, 0 as usize),
-            )
-            .draw_text("Press 'Q' or 'Esc' for exit", Vec2::y(2 as usize))
-            .set_origin(Vec2::xy(1 as usize, 3 as usize))
+            .set_origin(Vec2::xy(1 as usize, 1 as usize))
             .set_foreground(Color::Grey)
             .draw_rect(
                 &RectCharset::double_lines(),
@@ -80,25 +75,54 @@ pub fn run_battle(bots: Vec<ColorConfig>) {
                         ((MAP_HEIGHT as i32) - (y as i32) - 1) * 3,
                     );
 
-                    if bot.shield_direction.eq(&bot.chainsaw_direction) {
+                    if !bot.is_shield_destroyed()
+                        && bot.shield_direction.eq(&bot.chainsaw_direction)
+                    {
                         match bot.shield_direction {
-                            Direction::Down => pencil.draw_char('↧', bot_down),
-                            Direction::Up => pencil.draw_char('↥', bot_up),
-                            Direction::Left => pencil.draw_char('⟻', bot_left),
-                            Direction::Right => pencil.draw_char('⟼', bot_right),
+                            Direction::Down if bot.is_shield_damaged() => {
+                                pencil.draw_char('⤈', bot_down)
+                            }
+                            Direction::Up if bot.is_shield_damaged() => {
+                                pencil.draw_char('⤉', bot_up)
+                            }
+                            Direction::Left if bot.is_shield_damaged() => {
+                                pencil.draw_char('⇷', bot_left)
+                            }
+                            Direction::Right if bot.is_shield_damaged() => {
+                                pencil.draw_char('⇸', bot_right)
+                            }
+                            Direction::Down => pencil.draw_char('⇟', bot_down),
+                            Direction::Up => pencil.draw_char('⇞', bot_up),
+                            Direction::Left => pencil.draw_char('⇷', bot_left),
+                            Direction::Right => pencil.draw_char('⇻', bot_right),
                         };
                     } else {
-                        match bot.shield_direction {
-                            Direction::Down => pencil.draw_char('-', bot_down),
-                            Direction::Up => pencil.draw_char('-', bot_up),
-                            Direction::Left => pencil.draw_char('|', bot_left),
-                            Direction::Right => pencil.draw_char('|', bot_right),
-                        };
+                        if !bot.is_shield_destroyed() {
+                            match bot.shield_direction {
+                                Direction::Down if bot.is_shield_damaged() => {
+                                    pencil.draw_char('—', bot_down)
+                                }
+                                Direction::Up if bot.is_shield_damaged() => {
+                                    pencil.draw_char('—', bot_up)
+                                }
+                                Direction::Left if bot.is_shield_damaged() => {
+                                    pencil.draw_char('|', bot_left)
+                                }
+                                Direction::Right if bot.is_shield_damaged() => {
+                                    pencil.draw_char('|', bot_right)
+                                }
+
+                                Direction::Down => pencil.draw_char('=', bot_down),
+                                Direction::Up => pencil.draw_char('=', bot_up),
+                                Direction::Left => pencil.draw_char('‖', bot_left),
+                                Direction::Right => pencil.draw_char('‖', bot_right),
+                            };
+                        }
                         match bot.chainsaw_direction {
                             Direction::Down => pencil.draw_char('↓', bot_down),
                             Direction::Up => pencil.draw_char('↑', bot_up),
-                            Direction::Left => pencil.draw_char('⟵', bot_left),
-                            Direction::Right => pencil.draw_char('⟶', bot_right),
+                            Direction::Left => pencil.draw_char('←', bot_left),
+                            Direction::Right => pencil.draw_char('→', bot_right),
                         };
                     }
                 } else if let GameCell::Resource(resource) = &map[x][y] {

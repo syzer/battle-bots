@@ -2,17 +2,20 @@ use rand::Rng;
 use ruscii::terminal::Color;
 
 use super::{
-    action::ExecutableAction,
     bot::{Bot, BotStrategy, ColorConfig},
     resource::Resource,
 };
 
-pub const AVERAGE_RESOURCE_GENERATION_PER_TICK: u32 = 2;
+pub const AVERAGE_RESOURCE_GENERATION_PER_TICK: usize = 2;
+pub const MAX_RESOURCES: usize = 20;
 pub const RESOURCE_MAX_ENERGY_GAIN: usize = 4;
 pub const RESOURCE_MIN_ENERGY_GAIN: usize = 2;
 pub const MAP_HEIGHT: usize = 10;
 pub const MAP_WIDTH: usize = 30;
 pub const BOTS_STARTING_ENERGY: usize = 9;
+pub const STARTING_SHIELD_RESISTANCE: usize = 10;
+pub const TIREDNESS_TO_LOSE_ENERGY: usize = 6;
+pub const ATTACK_DAMAGE: usize = 3;
 
 #[derive(Clone, Copy)]
 pub enum GameCell {
@@ -28,8 +31,8 @@ pub struct Battle {
 
 #[derive(Clone)]
 pub struct Position {
-    x: usize,
-    y: usize,
+    pub x: usize,
+    pub y: usize,
 }
 
 #[derive(Clone)]
@@ -79,19 +82,9 @@ impl Battle {
         let mut map = [[GameCell::Empty; MAP_HEIGHT]; MAP_WIDTH];
 
         for color_config in colors.iter() {
-            for bot in 0..color_config.number_of_bots {
-                let mut rng = rand::thread_rng();
-
-                let mut placed = false;
-
-                while !placed {
-                    let x: usize = rng.gen_range(0..MAP_WIDTH);
-                    let y: usize = rng.gen_range(0..MAP_HEIGHT);
-
-                    if let GameCell::Empty = map[x][y] {
-                        map[x][y] = GameCell::Bot(Bot::new(color_config.color));
-                        placed = true;
-                    }
+            for _ in 0..color_config.number_of_bots {
+                if let Some(Position { x, y }) = find_empty_position(&map) {
+                    map[x][y] = GameCell::Bot(Bot::new(color_config.color));
                 }
             }
         }
@@ -115,9 +108,8 @@ impl Battle {
             for y in 0..MAP_HEIGHT {
                 if let GameCell::Bot(bot) = old_map[x][y] {
                     if let Some(strategy) = self.strategy_for(bot.color) {
-                        if let Ok(action) = (strategy)(x, y, &self.state) {
-                            self.state = action.execute(x, y, self.state.clone());
-                        }
+                        let actuators = (strategy)(&self.state, Position { x, y });
+                        self.state = actuators.execute(x, y, self.state.clone());
                     }
                 }
             }
@@ -130,37 +122,36 @@ impl Battle {
                     if bot.energy <= 0 {
                         map[x][y] = GameCell::Empty;
                     }
-
-                    let (attacking_position_x, attacking_position_y) =
-                        bot.chainsaw_direction.compute_position(x, y);
-
-                    if let GameCell::Bot(mut attacked_bot) =
-                        map[attacking_position_x][attacking_position_y]
-                    {
-                        if !attacked_bot
-                            .shield_direction
-                            .opposite()
-                            .eq(&bot.chainsaw_direction)
-                        {
-                            attacked_bot.energy -= 3;
-                        }
-                        map[attacking_position_x][attacking_position_y] = GameCell::Bot(bot);
-                    }
                 }
             }
         }
         let mut rng = rand::thread_rng();
         let generated_resources = rng.gen_range(0..(AVERAGE_RESOURCE_GENERATION_PER_TICK * 2));
 
-        for _ in 0..generated_resources {
-            let x = rng.gen_range(0..MAP_WIDTH);
-            let y = rng.gen_range(0..MAP_HEIGHT);
+        if self.state.resources.len() < MAX_RESOURCES {
+            for _ in 0..generated_resources {
+                if let Some(Position { x, y }) = find_empty_position(&map) {
+                    let energy_gain =
+                        rng.gen_range(RESOURCE_MIN_ENERGY_GAIN..RESOURCE_MAX_ENERGY_GAIN);
 
-            let energy_gain = rng.gen_range(RESOURCE_MIN_ENERGY_GAIN..RESOURCE_MAX_ENERGY_GAIN);
-
-            map[x][y] = GameCell::Resource(Resource { energy_gain });
+                    map[x][y] = GameCell::Resource(Resource { energy_gain });
+                }
+            }
         }
 
         self.state = from_matrix(map);
+    }
+}
+
+fn find_empty_position(map: &[[GameCell; MAP_HEIGHT]; MAP_WIDTH]) -> Option<Position> {
+    let mut rng = rand::thread_rng();
+
+    loop {
+        let x: usize = rng.gen_range(0..MAP_WIDTH);
+        let y: usize = rng.gen_range(0..MAP_HEIGHT);
+
+        if let GameCell::Empty = map[x][y] {
+            return Some(Position { x, y });
+        }
     }
 }

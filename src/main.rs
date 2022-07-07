@@ -1,9 +1,4 @@
-use engine::{
-    action::Action,
-    bot::ColorConfig,
-    state::{GameCell, Battle},
-    utils::direction::Direction,
-};
+use engine::bot::ColorConfig;
 use ruscii::terminal::Color;
 
 mod blue;
@@ -13,22 +8,22 @@ fn main() {
     engine::run_battle(vec![
         ColorConfig {
             color: Color::Blue,
-            number_of_bots: 5,
+            number_of_bots: 3,
             strategy: blue::decide,
         },
         ColorConfig {
             color: Color::Yellow,
-            number_of_bots: 5,
+            number_of_bots: 3,
             strategy: blue::decide,
         },
         ColorConfig {
-            color: Color::Green,
-            number_of_bots: 5,
+            color: Color::Grey,
+            number_of_bots: 3,
             strategy: blue::decide,
         },
         ColorConfig {
             color: Color::Red,
-            number_of_bots: 5,
+            number_of_bots: 3,
             strategy: blue::decide,
         },
     ]);
