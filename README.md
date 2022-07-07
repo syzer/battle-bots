@@ -7,11 +7,17 @@ This is a gamified training to introduce Rust in a playful way.
 Welcome to the latest edition of Battle-Bots! As always, we have the greatests bots battling each other:
 
 - Yellow
-- Blue
-- Green
 - Red
+- Grey
+- Blue
 
-Oh-oh... We seem to have technical difficulties... Yellow, Blue and Green are malfunctioning! They appear to only know how to go down!
+Go ahead and run the battle:
+
+```bash
+cargo run
+```
+
+Oh-oh... We seem to have technical difficulties... Yellow, Red and Grey are malfunctioning! They appear to only know how to go down!
 
 We need your help!
 
@@ -20,25 +26,38 @@ We need your help!
 Go in `src/main.rs`, and follow the instructions from top to bottom:
 
 1. Fix the Yellow bot.
-2. Fix the Green bot.
-3. Fix the Blue bot.
+   - Go to `src/yellow.rs`, and follow the instructions.
+2. Fix the Grey bot.
+   - Go to `src/grey.rs`, and follow the instructions.
+3. Fix the Red bot.
+   - Go to `src/red.rs`, and follow the instructions.
 
-4. Code your own decision making algorithm for Red, and beat the other colors!
+4. Code your own decision making algorithm for Blue, and beat the other colors!
+   - Go to `src/blue.rs`, and follow the instructions.
 
 
 ## Rules of the game
 
-- At the beginning of the game, there are 4 bots, battling in a world of 10x20 cells.
+- At the beginning of the game, there are 4 bots, battling in a world of 10x30 cells.
 - Each bot has an energy level, starting with 9. When the energy level of the Bot reaches 0, the bot loses.
-  - The number of the bot in the screen is its energy level.
+  - The number of the bot in the terminal is its energy level.
+- Each bot has a chainsaw with which to attack the enemies.
+  - The chainsaw is represented as the arrow in the terminal (`↓`, `↑`, `←`, `→`).
+- Each bot has a shield with which to defend itself. 
+  - The shield is represented by a bar (`|` or `—`).
+
+- Each turn, every bot decides to activate some actuators or not. There are 3 actuators:
+  - Move: bots can only move to one of its **adjacent positions (up, down, left or right)**.
+  - Rotate its chainsaw: clockwise or counterclockwise, a bot can attack an enemy:
+    - The chainsaw only makes damage when it is rotated towards an adjacent enemy, not when it's still in the direction of an enemy.
+  - Rotate its shield: also clockwise or counterclockwise:
+    - If the shield is in the direction of an adjacent attacking chainsaw, it will block the attack.
+    - The shield can resist some attacks from enemy chainsaws, but will be destroyed if it receives too many attacks.
+
 - Each turn, there is a possibility of resources spawning in any cell. Each resource contains an energy level.  
   - **Resources are white**, and its energy level is its number.
-- Each turn, every bot decides which action to take.
-- There are 3 actions:
-  - Move: bots can only move to one of its **adjacent positions (up, down, left or right)**.
-  - Attack: bots can attack bots that are on one adjacent position. 
-  - Gather Resource: bots can gather a resource to gain its energy back. Bots can't have more energy than their initial level (9).
-
+- Whenever a bot moves into a space occupied by a resource, it consumes it and adds its energy gain to its own energy level.
+   
 ## Running a battle
 
 ```bash

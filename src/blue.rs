@@ -1,74 +1,42 @@
 use battle_bots_engine::*;
 
-/**
- * Rotate the shield towards and adjacent enemy
- * Attack an adjacent enemy with the chainsaw
- * Move towards the closest enemy
- */
-pub fn decide(game_state: &GameState, bot_position: Position) -> Actuators {
-    let shield_rotation = shield_rotation(game_state, &bot_position);
 
-    let chainsaw_rotation = chainsaw_rotation(game_state, &bot_position);
-
-    let move_bot = should_move_towards_enemy(game_state, &bot_position);
-
-    Actuators {
-        rotate_chainsaw: chainsaw_rotation,
-        rotate_shield: shield_rotation,
-        move_bot,
+// If n is a positive integer, returns n
+// if n is a negative integer, returns -n
+fn absolute(n: isize) -> usize {
+    if n < 0 {
+        return -n as usize;
+    } else {
+        return n as usize;
     }
 }
 
-fn shield_rotation(game_state: &GameState, bot_position: &Position) -> Option<Rotation> {
-    let maybe_bot = bot_in_position(game_state, &bot_position);
+// Returns the distance from one position to another, counting the number of non-diagonal steps between them
+// eg. distance(0, 0, 1, 1) == 2
+fn distance(from_pos_x: usize, from_pos_y: usize, to_pos_x: usize, to_pos_y: usize) -> usize {
+    let x_distance = absolute(to_pos_x as isize - from_pos_x as isize);
+    let y_distance = absolute(to_pos_y as isize - from_pos_y as isize);
 
-    if let Some(bot) = maybe_bot {
-        if let Some(adjacent_bot_direction) = adjacent_bot(game_state, bot_position) {
-            let rotation = shortest_rotation(bot.shield_direction, adjacent_bot_direction);
-
-            return rotation;
-        }
-    }
-
-    None
+    x_distance + y_distance
 }
 
-fn chainsaw_rotation(game_state: &GameState, bot_position: &Position) -> Option<Rotation> {
-    let maybe_bot = bot_in_position(game_state, &bot_position);
-
-    if let Some(bot) = maybe_bot {
-        if let Some(adjacent_bot_direction) = adjacent_bot(game_state, bot_position) {
-            if adjacent_bot_direction == bot.chainsaw_direction {
-                return Some(Rotation::Clockwise);
-            }
-
-            let rotation = shortest_rotation(bot.chainsaw_direction, adjacent_bot_direction);
-
-            return rotation;
-        }
-    }
-
-    None
+// Returns whether there is a bot in the given position
+fn is_bot(game_state: &GameState, position: &Position) -> bool {
+    bot_in_position(game_state, position).is_some()
 }
 
-fn adjacent_bot(game_state: &GameState, bot_position: &Position) -> Option<Direction> {
-    let adjacent = get_adjacent_positions(game_state, bot_position);
-
-    let maybe_adjacent_bot = adjacent.into_iter().find(|pos| is_bot(game_state, pos));
-
-    if let Some(adjacent_bot) = maybe_adjacent_bot {
-        if let Ok(adjacent_bot_direction) =
-            adjacent_positions_to_direction(bot_position, &adjacent_bot)
-        {
-            return Some(adjacent_bot_direction);
-        }
-    }
-    None
+// Returns a bot if there is one in the given position
+fn bot_in_position(game_state: &GameState, position: &Position) -> Option<Bot> {
+    game_state
+        .bots
+        .iter()
+        .find(|b| b.0.x == position.x && b.0.y == position.y)
+        .map(|(_, b)| b.clone())
 }
 
 // Return a vector of the adjacent positions to the given one, in the form of (x, y) tuples
 // Careful! Don't return invalid positions (negative coordinates, or coordinates that exceed the map size)
-pub fn get_adjacent_positions(game_state: &GameState, position: &Position) -> Vec<Position> {
+fn get_adjacent_positions(game_state: &GameState, position: &Position) -> Vec<Position> {
     let mut positions = vec![];
 
     if position.x > 0 {
@@ -99,19 +67,10 @@ pub fn get_adjacent_positions(game_state: &GameState, position: &Position) -> Ve
     positions
 }
 
-pub fn is_bot(game_state: &GameState, position: &Position) -> bool {
-    bot_in_position(game_state, position).is_some()
-}
 
-pub fn bot_in_position(game_state: &GameState, position: &Position) -> Option<Bot> {
-    game_state
-        .bots
-        .iter()
-        .find(|b| b.0.x == position.x && b.0.y == position.y)
-        .map(|(_, b)| b.clone())
-}
-
-pub fn adjacent_positions_to_direction(
+// Returns the direction that the to position is relative to the from position
+// eg: adjacent_positions_to_direction(Position { x: 0, y: 0 }, Position { x: 1, y: 0 }) == Direction::Left
+fn adjacent_positions_to_direction(
     from: &Position,
     to: &Position,
 ) -> Result<Direction, String> {
@@ -128,6 +87,61 @@ pub fn adjacent_positions_to_direction(
     Err(String::from("Positions are not adjacent"))
 }
 
+// Returns whether there is an adjacent bot, and its position if there is one
+fn adjacent_bot(game_state: &GameState, bot_position: &Position) -> Option<Direction> {
+    let adjacent = get_adjacent_positions(game_state, bot_position);
+
+    let maybe_adjacent_bot = adjacent.into_iter().find(|pos| is_bot(game_state, pos));
+
+    if let Some(adjacent_bot) = maybe_adjacent_bot {
+        if let Ok(adjacent_bot_direction) =
+            adjacent_positions_to_direction(bot_position, &adjacent_bot)
+        {
+            return Some(adjacent_bot_direction);
+        }
+    }
+    None
+}
+
+// Control which way the shield should rotate
+// If returns None, the shield won't rotate at all
+fn shield_rotation(game_state: &GameState, bot_position: &Position) -> Option<Rotation> {
+    let maybe_bot = bot_in_position(game_state, &bot_position);
+
+    if let Some(bot) = maybe_bot {
+        if let Some(adjacent_bot_direction) = adjacent_bot(game_state, bot_position) {
+            let rotation = shortest_rotation(bot.shield_direction, adjacent_bot_direction);
+
+            return rotation;
+        }
+    }
+
+    None
+}
+
+/**
+ * Control which way the chainsaw should rotate
+ * If returns None, the chainsaw won't rotate at all
+ */
+fn chainsaw_rotation(game_state: &GameState, bot_position: &Position) -> Option<Rotation> {
+    let maybe_bot = bot_in_position(game_state, &bot_position);
+
+    if let Some(bot) = maybe_bot {
+        if let Some(adjacent_bot_direction) = adjacent_bot(game_state, bot_position) {
+            if adjacent_bot_direction == bot.chainsaw_direction {
+                return Some(Rotation::Clockwise);
+            }
+
+            let rotation = shortest_rotation(bot.chainsaw_direction, adjacent_bot_direction);
+
+            return rotation;
+        }
+    }
+
+    None
+}
+
+// Returns 
 fn shortest_rotation(from: Direction, to: Direction) -> Option<Rotation> {
     match (from, to) {
         _ if from == to => None,
@@ -139,29 +153,32 @@ fn shortest_rotation(from: Direction, to: Direction) -> Option<Rotation> {
     }
 }
 
-pub fn absolute(n: isize) -> usize {
-    if n < 0 {
-        return -n as usize;
-    } else {
-        return n as usize;
-    }
-}
 
-pub fn should_move_towards_enemy(
-    game_state: &GameState,
-    bot_position: &Position,
-) -> Option<Direction> {
-    if let Some(closest_enemy_position) = get_closest_enemy(game_state, bot_position) {
-        if let Ok(next_move) = next_move_in_path(game_state, bot_position, &closest_enemy_position)
-        {
-            return Some(next_move);
+fn get_closest_enemy(game_state: &GameState, bot_position: &Position) -> Option<Position> {
+    let mut closest_enemy: Option<Position> = None;
+
+    for x in 0..game_state.map_width {
+        for y in 0..game_state.map_height {
+            if x != bot_position.x || y != bot_position.y {
+                if is_bot(game_state, &Position { x, y }) {
+                    match closest_enemy {
+                        Some(Position {
+                            x: closest_x,
+                            y: closest_y,
+                        }) if distance(closest_x, closest_y, bot_position.x, bot_position.y)
+                            < distance(x, y, bot_position.x, bot_position.y) => {}
+                        _ => closest_enemy = Some(Position { x, y }),
+                    };
+                }
+            }
         }
     }
 
-    None
+    closest_enemy
 }
 
-pub fn next_move_in_path(
+
+fn next_move_in_path(
     game_state: &GameState,
     from: &Position,
     to: &Position,
@@ -176,7 +193,7 @@ pub fn next_move_in_path(
     adjacent_positions_to_direction(from, &first_move_position)
 }
 
-pub fn find_shortest_path(
+fn find_shortest_path(
     game_state: &GameState,
     from: &Position,
     to: &Position,
@@ -225,38 +242,35 @@ pub fn find_shortest_path(
     Err("There is no available path".into())
 }
 
-pub fn distance(from_pos_x: usize, from_pos_y: usize, to_pos_x: usize, to_pos_y: usize) -> usize {
-    let x_distance = absolute(to_pos_x as isize - from_pos_x as isize);
-    let y_distance = absolute(to_pos_y as isize - from_pos_y as isize);
-
-    x_distance + y_distance
-}
-
-pub fn get_closest_enemy(game_state: &GameState, bot_position: &Position) -> Option<Position> {
-    let mut closest_enemy: Option<Position> = None;
-
-    for x in 0..game_state.map_width {
-        for y in 0..game_state.map_height {
-            if x != bot_position.x || y != bot_position.y {
-                if is_bot(game_state, &Position { x, y }) {
-                    match closest_enemy {
-                        Some(Position {
-                            x: closest_x,
-                            y: closest_y,
-                        }) if distance(closest_x, closest_y, bot_position.x, bot_position.y)
-                            < distance(x, y, bot_position.x, bot_position.y) => {}
-                        _ => closest_enemy = Some(Position { x, y }),
-                    };
-                }
-            }
+fn next_move_towards_enemy(
+    game_state: &GameState,
+    bot_position: &Position,
+) -> Option<Direction> {
+    if let Some(closest_enemy_position) = get_closest_enemy(game_state, bot_position) {
+        if let Ok(next_move) = next_move_in_path(game_state, bot_position, &closest_enemy_position)
+        {
+            return Some(next_move);
         }
     }
 
-    closest_enemy
+    None
 }
 
-// Return whether we should gather a resource that's in an adjacent position to the bot's
-// Return Some((resource_pos_x, resource_pos_y)) if we should gather the resource at that position
-// Return None if we should not gather any resource around us
-//
-// Extra credit: only gather the resource if the bot has less than 9 energy
+/**
+ * Rotate the shield towards and adjacent enemy
+ * Attack an adjacent enemy with the chainsaw
+ * Move towards the closest enemy
+ */
+pub fn decide(game_state: &GameState, bot_position: Position) -> Actuators {
+    let shield_rotation = shield_rotation(game_state, &bot_position);
+
+    let chainsaw_rotation = chainsaw_rotation(game_state, &bot_position);
+
+    let move_bot = next_move_towards_enemy(game_state, &bot_position);
+
+    Actuators {
+        rotate_chainsaw: chainsaw_rotation,
+        rotate_shield: shield_rotation,
+        move_bot,
+    }
+}
