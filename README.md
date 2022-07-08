@@ -45,6 +45,7 @@ Go in `src/main.rs`, and follow the instructions from top to bottom:
   - The chainsaw is represented as the arrow in the terminal (`↓`, `↑`, `←`, `→`).
 - Each bot has a shield with which to defend itself. 
   - The shield is represented by a bar (`|` or `—`).
+  - If both the chainsaw and the shield are in the same direction, then they are represented with an arrow with a bar (`⤈`, `⤉`, `⇷`, `⇸`).
 
 - Each turn, every bot decides to activate some actuators or not. There are 3 actuators:
   - Move: bots can only move to one of its **adjacent positions (up, down, left or right)**.
