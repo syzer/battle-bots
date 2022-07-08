@@ -1,11 +1,11 @@
-/** 
+/**
  * The yellow bot is broken! It's using all the functions below, but they seem not to be implemented correctly
- * 
+ *
  * Please help us fix the bot!
- * 
+ *
  * Instructions
  * =============
- * 
+ *
  * Implement all the functions below
  * Run a battle (`cargo run`) after they have been implemented to test that the yellow bot works again
  */
@@ -39,11 +39,6 @@ pub fn absolute(n: isize) -> usize {
 
 // Returns the distance from one position to another, counting the number of non-diagonal steps between them
 // eg. distance(0, 0, 1, 1) == 2
-pub fn distance(
-    from_pos_x: usize,
-    from_pos_y: usize,
-    to_pos_x: usize,
-    to_pos_y: usize,
-) -> usize {
+pub fn distance(from_pos_x: usize, from_pos_y: usize, to_pos_x: usize, to_pos_y: usize) -> usize {
     0
 }
