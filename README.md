@@ -17,7 +17,7 @@ Go ahead and run the battle:
 cargo run
 ```
 
-Oh-oh... We seem to have technical difficulties... Yellow, Red and Grey are malfunctioning! They appear to only know how to go down!
+Oh-oh... We seem to have technical difficulties... Yellow, Red and Grey are malfunctioning! They appear to be stuck!
 
 We need your help!
 
@@ -38,8 +38,9 @@ Go in `src/main.rs`, and follow the instructions from top to bottom:
 
 ## Rules of the game
 
-- At the beginning of the game, there are 4 bots, battling in a world of 10x30 cells.
-- Each bot has an energy level, starting with 9. When the energy level of the Bot reaches 0, the bot loses.
+- At the beginning of the game, there are 3 bots of 4 different colors, battling in a world of 10x30 cells.
+- Each bot has an energy level, starting with 9. 
+  - When the energy level of the Bot reaches 0, the bot loses.
   - The number of the bot in the terminal is its energy level.
 - Each bot has a chainsaw with which to attack the enemies.
   - The chainsaw is represented as the arrow in the terminal (`↓`, `↑`, `←`, `→`).
