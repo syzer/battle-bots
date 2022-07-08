@@ -2,7 +2,6 @@
 
 This is a gamified training to introduce Rust in a playful way.
 
-![](screenshot.png)
 
 ## Welcome!
 
@@ -13,11 +12,9 @@ Welcome to the latest edition of Battle-Bots! As always, we have the greatests b
 - Grey
 - Blue
 
-Go ahead and run the battle:
+Let's go ahead and run the battle:
 
-```bash
-cargo run
-```
+![Alt Text](battle.gif)
 
 Oh-oh... We seem to have technical difficulties... Yellow, Red and Grey are malfunctioning! They appear to be stuck!
 
