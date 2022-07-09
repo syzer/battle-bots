@@ -18,7 +18,7 @@ dependencies = [
 [[package]]
 name = "battle_bots_engine"
 version = "0.1.0"
-source = "git+https://github.com/holochain-immersive/battle-bots-engine?branch=main#10ffcfcd684acabe2412dc2aac1f19e51dfe9871"
+source = "git+https://github.com/holochain-immersive/battle-bots-engine?branch=main#56da9378b726074a3e0b7998298417630ace064b"
 dependencies = [
  "rand",
  "ruscii",
