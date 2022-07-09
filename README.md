@@ -51,6 +51,7 @@ Go in `src/main.rs`, and follow the instructions from top to bottom:
 - Each turn, every bot decides to activate some actuators or not. There are 3 actuators:
 
   - Move: bots can only move to one of its **adjacent positions (up, down, left or right)**.
+    - Each time the bot moves 6 steps, it gets tired and loses 1 energy.
   - Rotate its chainsaw: clockwise or counterclockwise, a bot can attack an enemy:
     - The chainsaw only makes damage when it is rotated towards an adjacent enemy, not when it's still in the direction of an enemy.
   - Rotate its shield: also clockwise or counterclockwise:
