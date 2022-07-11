@@ -25,6 +25,7 @@ fn main() {
                     yellow::is_position_inside_map_bounds,
                     yellow::absolute,
                     yellow::distance,
+                    yellow::adjacent_position_to_the_left,
                 )
             },
         },
@@ -35,7 +36,6 @@ fn main() {
                 battle_bots_engine::grey(
                     state,
                     position,
-                    grey::adjacent_position_to_the_left,
                     grey::adjacent_position_in_direction,
                     grey::is_bot,
                     grey::shortest_rotation,

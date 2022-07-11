@@ -12,11 +12,6 @@ use battle_bots_engine::*;
  * Run a battle (`cargo run`) after they have been implemented to test that the grey bot works again
  */
 
-// Returns the position that's adjacent to the left of the given one, in the form (x, y)
-// eg. adjacent_position_to_the_left(4, 5) == (3, 5)
-pub fn adjacent_position_to_the_left(x: usize, y: usize) -> (usize, usize) {
-    (0, 0)
-}
 
 // Returns the position that's adjacent to the given one in the given direction, in the form (x, y)
 // eg. adjacent_position_in_direction(4, 5, Direction::Down) == (4, 6)
