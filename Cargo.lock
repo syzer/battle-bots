@@ -13,12 +13,13 @@ name = "battle_bots"
 version = "0.1.0"
 dependencies = [
  "battle_bots_engine",
+ "serde_json",
 ]
 
 [[package]]
 name = "battle_bots_engine"
 version = "0.1.0"
-source = "git+https://github.com/holochain-immersive/battle-bots-engine?branch=main#a944ce8c457ee285cb14796c5f567583a03a81f5"
+source = "git+https://github.com/holochain-immersive/battle-bots-engine?branch=main#1cf09bf8fd34958e31a084d08e902b7ed9665684"
 dependencies = [
  "rand",
  "ruscii",
@@ -131,6 +132,12 @@ checksum = "b2b3ea6ff95e175473f8ffe6a7eb7c00d054240321b84c57051175fe3c1e075e"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "itoa"
+version = "1.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "112c678d4050afce233f4f2852bb2eb519230b3cf12f33585275537d7e41578d"
 
 [[package]]
 name = "kernel32-sys"
@@ -387,10 +394,33 @@ dependencies = [
 ]
 
 [[package]]
+name = "ryu"
+version = "1.0.10"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f3f6f92acf49d1b98f7a81226834412ada05458b7364277387724a237f062695"
+
+[[package]]
 name = "scopeguard"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "d29ab0c6d3fc0ee92fe66e2d99f700eab17a8d57d1c1d3b748380fb20baa78cd"
+
+[[package]]
+name = "serde"
+version = "1.0.139"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0171ebb889e45aa68b44aee0859b3eede84c6f5f5c228e6f140c0b2a0a46cad6"
+
+[[package]]
+name = "serde_json"
+version = "1.0.82"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "82c2c1fdcd807d1098552c5b9a36e425e42e9fbd7c6a37a8425f390f781f7fa7"
+dependencies = [
+ "itoa",
+ "ryu",
+ "serde",
+]
 
 [[package]]
 name = "signal-hook"

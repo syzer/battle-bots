@@ -28,10 +28,11 @@ pub fn is_position_inside_map_bounds(
     map_width: usize,
     map_height: usize,
 ) -> bool {
-    if x >= map_width || y >= map_height {
-        return false;
-    }
-    return true;
+    // if x >= map_width || y >= map_height {
+    //     return false;
+    // }
+    // return true;
+    x < map_width && y < map_height
 }
 
 // If n is a positive integer, returns n

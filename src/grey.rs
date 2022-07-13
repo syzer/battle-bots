@@ -1,5 +1,16 @@
+#[macro_use]
+// extern crate serde_json;
+// extern crate serde;
+
 use battle_bots_engine::*;
-use std::num::Wrapping;
+// use std::num::Wrapping;
+use serde_json::json;
+
+// use core::fmt::{Debug, Formatter};
+// use std::fmt;
+// use serde::Serialize;
+
+
 
 /** 
  * The grey bot is broken! It's using all the functions below, but they seem not to be implemented correctly
@@ -28,21 +39,70 @@ pub fn adjacent_position_in_direction(x: usize, y: usize, direction: Direction) 
     }
 }
 
+
+
+
 // Returns whether there is a bot in the given position
 pub fn is_bot(game_state: &GameState, position: &Position) -> bool {
-    true
+    // true
     // game_state.
+    // println!("{:?} unwraps", game_state.bots);
+    // print!("{:?} unwraps", game_state);
+    
+    // let pos = game_state.bots.iter().any(|(pos, _)| pos == *position);
+    // println!("{:?}", game_state);
+    // println!("{:?}", game_state.bots);
+    // let pos = game_state.bots.iter().any(|(pos, _)| pos == *position);
+    // let json = serde_json::to_string_pretty(&game_state);
+    // println!("{}", json.unwrap());
+    // println!("{:?}", pos);
+
+    // let obj = json!({"foo":666 ,"bar":66});
+    // println!("{}", serde_json::to_string_pretty(&obj).unwrap());
+
+    let pos = game_state.bots.iter()
+        .any(|(pos, _)| pos.x == position.x 
+            && pos.y == position.y);
+
+    // println!("{:?}", pos);
+    // let a = [1, 2, 3]; 
+    // let some = a.iter().any(|&x| x > 0);
+    // println!("{:?}", some);
+    // println!("=---------{}-------{}", position.y, position.x);
+    // println!("{:?}", game_state);
+
+    return pos;
 }
 
 // Returns the shortest way to rotate the "from" direction to get the "to" direction
 // Assumes that from and to are not equal
 // eg. shortest_rotation(Direction::Up, Direction::Right) == Rotation::Clockwise
 pub fn shortest_rotation(from: &Direction, to: &Direction) -> Rotation {
-    Rotation::Clockwise
+    match (from, to) {
+        // (Direction::Up, Direction::Right) => Rotation::Clockwise,
+        (Direction::Up, Direction::Left) => Rotation::Counterclockwise,
+        // (Direction::Right, Direction::Down) => Rotation::Clockwise,
+        // (Direction::Down, Direction::Left) => Rotation::Clockwise,
+        // (Direction::Left, Direction::Up) => Rotation::Clockwise,
+        (Direction::Left, Direction::Down) => Rotation::Counterclockwise,
+        (Direction::Down, Direction::Right) => Rotation::Counterclockwise,
+        (Direction::Right, Direction::Up) => Rotation::Counterclockwise,
+        _ => Rotation::Clockwise,
+    }
 }
 
 // Rotate the given direction with the given rotation
 // eg. rotate_direction(Direction::Up, Rotation::Clockwise) == Direction::Right
 pub fn rotate_direction(direction: &Direction, rotation: &Rotation) -> Direction {
-    Direction::Down
+    match (direction, rotation) {
+        (Direction::Up, Rotation::Clockwise) => Direction::Right,
+        (Direction::Up, Rotation::Counterclockwise) => Direction::Left,
+        (Direction::Right, Rotation::Clockwise) => Direction::Down,
+        (Direction::Right, Rotation::Counterclockwise) => Direction::Up,
+        (Direction::Down, Rotation::Clockwise) => Direction::Left,
+        (Direction::Down, Rotation::Counterclockwise) => Direction::Right,
+        (Direction::Left, Rotation::Clockwise) => Direction::Up,
+        (Direction::Left, Rotation::Counterclockwise) => Direction::Down,
+        // _ => Direction::Up,
+    }
 }
