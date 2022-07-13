@@ -55,19 +55,21 @@ pub fn adjacent_bot(game_state: &GameState, bot_position: &Position) -> Option<D
     .into_iter()
     .find(|p| bot_in_position(game_state, &p).is_some());
 
-  if let pos = None {
-    return None;
-  }
-  Some(adjacent_positions_to_direction(bot_position, &p).unwrap())
+  Some(
+    adjacent_positions_to_direction(bot_position, &pos.unwrap())
+      .unwrap())
 }
 
 // Returns the position of the closest enemy
 pub fn get_closest_enemy(game_state: &GameState, bot_position: &Position) -> Option<Position> {
   // game_state.bots.into_iter().sort
   let a = game_state.bots
-        .into_iter()
+        .iter()
         .max_by(|(a, _), (b, _)| a.x.cmp(&b.x))
         .map(|(p, _)| p);
   
-  return a;
+  match a {
+    Some(p) => Some(p.clone()),
+    None => None 
+  }
 }
