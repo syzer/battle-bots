@@ -44,34 +44,10 @@ pub fn adjacent_position_in_direction(x: usize, y: usize, direction: Direction) 
 
 // Returns whether there is a bot in the given position
 pub fn is_bot(game_state: &GameState, position: &Position) -> bool {
-    // true
-    // game_state.
-    // println!("{:?} unwraps", game_state.bots);
-    // print!("{:?} unwraps", game_state);
-    
-    // let pos = game_state.bots.iter().any(|(pos, _)| pos == *position);
-    // println!("{:?}", game_state);
-    // println!("{:?}", game_state.bots);
-    // let pos = game_state.bots.iter().any(|(pos, _)| pos == *position);
-    // let json = serde_json::to_string_pretty(&game_state);
-    // println!("{}", json.unwrap());
-    // println!("{:?}", pos);
-
-    // let obj = json!({"foo":666 ,"bar":66});
-    // println!("{}", serde_json::to_string_pretty(&obj).unwrap());
-
-    let pos = game_state.bots.iter()
+    game_state.bots
+        .iter()
         .any(|(pos, _)| pos.x == position.x 
-            && pos.y == position.y);
-
-    // println!("{:?}", pos);
-    // let a = [1, 2, 3]; 
-    // let some = a.iter().any(|&x| x > 0);
-    // println!("{:?}", some);
-    // println!("=---------{}-------{}", position.y, position.x);
-    // println!("{:?}", game_state);
-
-    return pos;
+            && pos.y == position.y)
 }
 
 // Returns the shortest way to rotate the "from" direction to get the "to" direction
@@ -79,11 +55,7 @@ pub fn is_bot(game_state: &GameState, position: &Position) -> bool {
 // eg. shortest_rotation(Direction::Up, Direction::Right) == Rotation::Clockwise
 pub fn shortest_rotation(from: &Direction, to: &Direction) -> Rotation {
     match (from, to) {
-        // (Direction::Up, Direction::Right) => Rotation::Clockwise,
         (Direction::Up, Direction::Left) => Rotation::Counterclockwise,
-        // (Direction::Right, Direction::Down) => Rotation::Clockwise,
-        // (Direction::Down, Direction::Left) => Rotation::Clockwise,
-        // (Direction::Left, Direction::Up) => Rotation::Clockwise,
         (Direction::Left, Direction::Down) => Rotation::Counterclockwise,
         (Direction::Down, Direction::Right) => Rotation::Counterclockwise,
         (Direction::Right, Direction::Up) => Rotation::Counterclockwise,

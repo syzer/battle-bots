@@ -47,7 +47,6 @@ pub fn adjacent_positions_to_direction(from: &Position, to: &Position) -> Result
 
     _ => Ok(Direction::Right)
   }
-  // Err(String::from("beep beep bop!"))
 }
 
 // Returns whether there is an adjacent bot, and its position if there is one
@@ -67,14 +66,8 @@ pub fn get_closest_enemy(game_state: &GameState, bot_position: &Position) -> Opt
   // game_state.bots.into_iter().sort
   let a = game_state.bots
         .into_iter()
-        // .enumerate()
         .max_by(|(a, _), (b, _)| a.x.cmp(&b.x))
-        // .max_by(|(a, _), (b, _)| a.partial_cmp(b).unwrap_or(Ordering::Equal))
         .map(|(p, _)| p);
   
-  // if let a = None {
-  //   return None;
-  // }
   return a;
-  // None
 }
