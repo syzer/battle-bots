@@ -36,10 +36,6 @@ pub fn inc (num: usize, max: usize) -> usize {
   } else {
     max
   }
-  // match num {
-    // max => max,
-    // _ => num + 1
-  // }
 }
 
 // Return a vector of the adjacent positions to the given one, in the form of (x, y) tuples
