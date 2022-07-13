@@ -23,13 +23,27 @@ pub fn bot_in_position(game_state: &GameState, position: &Position) -> Option<Bo
       .map(|(_, bot)| bot.clone())
 }
 
+pub fn dec (num: usize) -> usize {
+  match num {
+    0 => 0,
+    _ => num - 1
+  }  
+}
+
+pub fn inc (num: usize, max: usize) -> usize {
+  match num {
+    max => max,
+    _ => num +1
+  }
+}
+
 // Return a vector of the adjacent positions to the given one, in the form of (x, y) tuples
 // Careful! Don't return invalid positions (negative coordinates, or coordinates that exceed the map size)
 pub fn valid_adjacent_positions(game_state: &GameState, position: &Position) -> Vec<Position> {
-  let up = Position { x: position.x, y: position.y - 1 };
-  let down = Position { x: position.x, y: position.y + 1 };
-  let right: Position = Position { x: position.x + 1, y: position.y };
-  let left: Position = Position { x: position.x - 1, y: position.y };
+  let up = Position { x: position.x, y: dec(position.y)};
+  let down = Position { x: position.x, y: inc(position.y, game_state.map_height) };
+  let right: Position = Position { x: inc(position.x, game_state.map_width), y: position.y };
+  let left: Position = Position { x: dec(position.x), y: position.y };
 
   vec![up, right, down, left]
     .into_iter()
@@ -41,7 +55,8 @@ pub fn valid_adjacent_positions(game_state: &GameState, position: &Position) -> 
 // eg: adjacent_positions_to_direction(Position { x: 0, y: 0 }, Position { x: 1, y: 0 }) == Direction::Right
 pub fn adjacent_positions_to_direction(from: &Position, to: &Position) -> Result<Direction, String> {
   match (from, to) {
-    (from, to) if from.x == to.x && from.y == to.y - 1      => Ok(Direction::Up),
+    // TODO here will panic!
+    (from, to) if from.x == to.x && to.y > 0 && from.y == to.y - 1      => Ok(Direction::Up),
     (from, to) if from.x == to.x && from.y - 1 == to.y      => Ok(Direction::Down),
     (from, to) if from.x - 1 == to.x && from.y == to.y      => Ok(Direction::Left),
 
@@ -55,9 +70,15 @@ pub fn adjacent_bot(game_state: &GameState, bot_position: &Position) -> Option<D
     .into_iter()
     .find(|p| bot_in_position(game_state, &p).is_some());
 
+  if let None = pos {
+    return None;
+  } 
+
   Some(
-    adjacent_positions_to_direction(bot_position, &pos.unwrap())
-      .unwrap())
+    adjacent_positions_to_direction(
+      bot_position, 
+      &pos.unwrap())
+        .unwrap())
 }
 
 // Returns the position of the closest enemy
