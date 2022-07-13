@@ -1,10 +1,10 @@
-#[macro_use]
+// #[macro_use]
 // extern crate serde_json;
 // extern crate serde;
 
 use battle_bots_engine::*;
 // use std::num::Wrapping;
-use serde_json::json;
+// use serde_json::json; // TODO
 
 // use core::fmt::{Debug, Formatter};
 // use std::fmt;
